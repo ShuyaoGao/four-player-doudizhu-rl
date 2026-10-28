@@ -1,0 +1,14 @@
+/* 自动生成：python -m tools.build（来自 credits.json）；不要手改。 */
+window.DDZ_CREDITS = {
+ "AUTHOR": "Shuyao Gao",
+ "AUTHOR_EMAIL": "gaoshuyao.mk@gmail.com",
+ "UNIVERSITY_EN": "aSSIST University (Seoul School of Integrated Sciences and Technologies)",
+ "UNIVERSITY_KO": "서울과학종합대학원대학교",
+ "SERIES_NAME": "AI 教学演示案例",
+ "SERIES_NAME_EN": "AI Teaching Demos",
+ "GH_USER": "ShuyaoGao",
+ "REPO_NAME": "four-player-doudizhu-rl",
+ "YEAR": "2026",
+ "VERSION": "1.0",
+ "UNIVERSITY_LOGO": ""
+};

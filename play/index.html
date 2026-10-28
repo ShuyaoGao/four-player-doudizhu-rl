@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>四人斗地主</title>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/table.css">
+<link rel="stylesheet" href="css/mobile.css">
+</head>
+<body class="n4">
+<div id="app">
+  <header id="topbar">
+    <div class="brand">四人斗地主<span class="sub">两副牌 · 1 地主 vs 3 农民 · 看 DMC 网络怎么打分</span></div>
+    <nav id="modes" role="tablist">
+      <button class="mode" data-mode="watch" data-tip="mode-watch">观战</button>
+      <button class="mode" data-mode="play" data-tip="mode-play">我来玩</button>
+      <button class="mode" data-mode="practice" data-tip="mode-practice">规则练习</button>
+    </nav>
+    <div class="spacer"></div>
+    <label class="switch" id="big-wrap" data-tip="bigscreen"><input type="checkbox" id="big-toggle"><span>大屏模式</span></label>
+    <button id="help-btn" class="icon-btn" title="操作说明（H）">?</button>
+    <button id="exit-btn" class="exit-btn" title="停止运行">退出</button>
+    <button id="menu-btn" aria-label="菜单" aria-expanded="false" aria-controls="menu">☰</button>
+    <div id="menu" role="menu" hidden>
+      <button role="menuitem" id="menu-help">操作说明</button>
+      <button role="menuitem" id="menu-ctrl">对手与选项</button>
+      <button role="menuitem" id="menu-open">明牌</button>
+      <button role="menuitem" id="menu-new">新一局</button>
+      <div class="sep"></div>
+      <button role="menuitem" id="menu-exit">退出</button>
+    </div>
+  </header>
+
+  <main id="layout">
+    <section id="left">
+      <div id="table" class="panel">
+        <div id="felt"></div>
+        <div id="me-zone" hidden>
+          <div id="me-title"></div>
+          <div id="me-hand" class="hand-wrap" data-tip="select"></div>
+          <div id="me-actions"></div>
+          <div class="muted small kbd-only" style="text-align:center">快捷键：回车 出牌 · 空格 过 · T 提示 · Esc 清空 · 双击一张牌 = 选中同点数全部 · H 说明</div>
+        </div>
+        <div id="result-banner" hidden></div>
+      </div>
+
+      <!-- 手机：主画面下方的一行按钮（观战：暂停 / 单步；我来玩 / 练习：看大脑（或看规则依据）/ 选项） -->
+      <div id="mob-bar" aria-label="手机操作">
+        <button class="mbtn mob-watch" id="mob-pause">⏸ 暂停</button>
+        <button class="mbtn mob-watch" id="mob-step">⏭ 单步</button>
+        <button class="mbtn primary mob-play" id="brain-toggle">看大脑</button>
+        <button class="mbtn mob-play" id="ctrl-toggle">选项</button>
+        <span id="mob-explain"></span>
+      </div>
+
+      <div id="controls">
+        <div class="panel" id="practice-panel" hidden>
+          <div class="panel-h">练习任务 <span class="muted small" id="task-progress"></span></div>
+          <ol id="tasks"></ol>
+          <div class="panel-h" style="margin-top:8px">牌型图鉴 <span class="muted small">点一个看例子</span></div>
+          <div id="types"></div>
+          <div id="type-demo" class="muted small"></div>
+        </div>
+        <div class="panel" id="preset-panel">
+          <div class="panel-h">AI 强度 <span class="muted" id="preset-scope"></span></div>
+          <div id="presets"></div>
+          <div id="preset-desc" class="muted small"></div>
+          <details id="fine-tune"><summary>细调：每个座位单独选</summary><div id="seat-kinds"></div></details>
+        </div>
+        <div class="panel" id="playback-panel">
+          <div class="panel-h">播放控制</div>
+          <div class="row">
+            <button class="btn" id="pause-btn" data-tip="pause">⏸ 暂停</button>
+            <button class="btn" id="step-btn" data-tip="step">⏭ 单步</button>
+            <button class="btn primary" id="new-btn">新一局</button>
+            <label class="switch" id="open-wrap" data-tip="open"><input type="checkbox" id="open-toggle"><span id="open-label">明牌</span></label>
+          </div>
+          <div class="row">
+            <span class="muted small">出牌间隔</span>
+            <span id="speed-presets"></span>
+            <input type="range" id="speed" min="100" max="2500" step="50" value="900">
+            <span id="speed-val" class="small"></span>
+          </div>
+        </div>
+        <div class="panel"><div class="panel-h">现在发生了什么</div><div id="explain"></div></div>
+        <div class="panel two-col">
+          <div><div class="panel-h">积分</div><div id="scores"></div></div>
+          <div><div class="panel-h">对局记录</div><div id="log"></div></div>
+        </div>
+        <div class="panel"><div class="panel-h">规则要点</div><div class="rules-text" id="rules-text"></div></div>
+      </div>
+    </section>
+
+    <section id="right">
+      <div id="right-tabs" role="tablist"><button class="rtab" data-pane="brain" data-tip="pane-brain">大脑面板</button><button class="rtab" data-pane="rules" data-tip="pane-rules">规则依据 · 记牌器</button></div>
+      <div id="rules-pane" class="pane"></div>
+      <div id="brain-pane" class="pane" hidden>
+        <div id="brain-top">
+          <div id="brain-tabs" role="tablist"></div>
+          <label class="switch small" data-tip="follow"><input type="checkbox" id="follow-toggle" checked><span>跟随行动方</span></label>
+          <div class="spacer"></div>
+          <span id="dec-nav">
+            <button class="icon-btn" id="dec-prev" title="上一次决策">◀</button>
+            <span id="dec-label" class="small"></span>
+            <button class="icon-btn" id="dec-next" title="下一次决策">▶</button>
+          </span>
+          <button class="btn small" id="restore-btn" data-tip="knock">恢复神经元</button>
+        </div>
+        <div id="brain-struct"></div>
+        <div id="brain-body"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer"></footer>
+</div>
+
+<div id="tip" hidden></div>
+<div id="toast"></div>
+
+<div id="help" class="modal" hidden>
+  <div class="modal-card">
+    <button class="close" id="help-close" title="关闭">×</button>
+    <h2>四人斗地主 · 怎么用</h2>
+    <div class="modal-body"><div class="help-grid" id="help-grid"></div></div>
+    <div class="modal-foot"><button class="btn primary" id="help-ok">开始</button></div>
+  </div>
+</div>
+
+<div id="ended" hidden>
+  <div class="ended-card">
+    <h2>已停止运行</h2>
+    <p>所有计算都已结束，可以直接关闭这个标签页。</p>
+  </div>
+</div>
+
+<button id="brain-close" type="button" hidden>返回</button>
+<div id="rotate-hint" role="status"><div><b>竖屏体验更佳</b>把手机竖过来：上面是牌桌，下面是你的手牌和「出牌」「过」「提示」。<br><button id="rot-ok" type="button">仍然横屏继续</button></div></div>
+
+<script src="js/selftest.js"></script>
+<script src="js/credits.js"></script>
+<script src="js/pyrandom.js"></script>
+<script src="js/core.js"></script>
+<script src="js/ui_common.js"></script>
+<script src="js/ddz4.js"></script>
+<script src="js/model_dmc4.js"></script>
+<script src="js/nn.js"></script>
+<script src="js/ddz4_ui.js"></script>
+<script src="js/brain.js"></script>
+<script src="js/mobile.js"></script>
+<script src="js/table.js"></script>
+</body>
+</html>

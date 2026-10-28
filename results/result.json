@@ -1,0 +1,71 @@
+{
+ "format": "cardgames/result/1",
+ "game": "ddz4",
+ "title": "四人斗地主",
+ "eval": {
+  "script": "evaluate.py team_match via tools/run_eval.py",
+  "seed": 2026,
+  "note": "每组换边各打一半；胜率 = 该智能体所在队伍赢的局数 / 总局数。各游戏强弱队结构不同，50% 即为同强度。",
+  "matchups": {
+   "greedy_vs_random": {
+    "desc": "贪心 vs 随机",
+    "games": 200,
+    "win_rate": 0.865,
+    "wilson95": [
+     0.8107,
+     0.9055
+    ]
+   },
+   "dmc_vs_random": {
+    "desc": "DMC vs 随机",
+    "games": 200,
+    "win_rate": 0.415,
+    "wilson95": [
+     0.3489,
+     0.4843
+    ]
+   },
+   "dmc_vs_greedy": {
+    "desc": "DMC vs 贪心",
+    "games": 200,
+    "win_rate": 0.15,
+    "wilson95": [
+     0.1071,
+     0.2061
+    ]
+   }
+  }
+ },
+ "model": {
+  "q_spread": {
+   "games": 20,
+   "seed_from": 2126,
+   "decisions": 726,
+   "spread_median": 0.0066,
+   "spread_p90": 0.0195,
+   "spread_max": 0.041,
+   "agree_with_greedy": 0.3003,
+   "note": "Q 的“最高 - 最低”；训练目标是赢 +1 / 输 -1，所以 2.0 是最大可能差距"
+  },
+  "checkpoint": "checkpoints/dmc_ddz4.pt",
+  "positions": [
+   "landlord",
+   "p1",
+   "p2",
+   "p3"
+  ],
+  "in_dim": 1403,
+  "params_per_net": 883201,
+  "params_total": 3532804,
+  "training_steps": null,
+  "training_time": null,
+  "training_note": "训练步数和用时未记录；重新训练命令见 README"
+ },
+ "env": {
+  "python": "3.11.9",
+  "numpy": "2.4.6",
+  "torch": "2.13.0+cpu",
+  "platform": "Windows"
+ },
+ "elapsed_seconds": 19.3
+}

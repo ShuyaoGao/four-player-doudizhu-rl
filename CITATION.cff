@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "如果在教学或研究中使用了本项目，请按以下信息引用。If you use this project, please cite it as below."
+title: "four-player-doudizhu-rl: 四人斗地主 (Four-player DouDizhu with a DMC brain panel)"
+type: software
+authors:
+  - family-names: Gao
+    given-names: Shuyao
+    email: "gaoshuyao.mk@gmail.com"
+    affiliation: "aSSIST University (Seoul School of Integrated Sciences and Technologies)"
+version: "1.0"
+date-released: "2026-10-14"
+license: MIT
+repository-code: "https://github.com/ShuyaoGao/four-player-doudizhu-rl"
+url: "https://shuyaogao.github.io/four-player-doudizhu-rl/"
+abstract: >-
+  A browser-only teaching demo (AI Teaching Demos): a browser-only teaching demo of two-deck four-player DouDizhu (one landlord vs three peasants). The full rule engine runs in JavaScript and is checked move-by-move against the Python engine. A live "brain panel" shows how a Deep Monte Carlo (DMC) Q-network scores every legal move, with real activations computed from float16 weights; a rule panel explains the greedy baseline. Honest result: this DMC model is weaker than random play, so it is presented as an example of an under-trained network.
+keywords:
+  - course-demo
+  - reinforcement-learning
+  - doudizhu
+  - card-game

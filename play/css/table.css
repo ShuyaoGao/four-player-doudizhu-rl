@@ -1,0 +1,63 @@
+/* 牌桌页面（五个游戏共用）的样式；基础样式在 base.css（从 doudizhu-dmc-lab 复制）。 */
+#table { min-height: 0; padding: 8px; }
+#felt { position: relative; height: 400px; border-radius: 50% / 34%; background: radial-gradient(ellipse at 50% 45%, var(--felt1) 0%, var(--felt2) 78%); border: 2px solid #3d6b4f; }
+body.n6 #felt, body.n5 #felt { height: 440px; }
+.seatwrap { position: absolute; transform: translate(-50%, -50%); width: 30%; max-width: 230px; z-index: 2; }
+.seatbox { background: rgba(0,0,0,.42); border: 2px solid transparent; border-radius: 10px; padding: 4px 8px; font-size: 12px; line-height: 1.45; }
+.seatbox.turn { border-color: var(--accent) !important; box-shadow: 0 0 12px rgba(255,201,77,.5); }
+.seatbox .sh b { font-size: 13px; }
+.seatbox .sc b { color: var(--accent); font-size: 14px; }
+.seatbox .danger { color: var(--danger); }
+.lastplay { min-height: 26px; display: flex; flex-wrap: wrap; align-items: center; gap: 1px; margin-top: 2px; }
+.lastplay .card.sm { width: 22px; height: 32px; margin-left: -7px; }
+.lastplay .card.sm:first-child { margin-left: 0; }
+.lastplay .card.sm .rk { font-size: 11px; } .lastplay .card.sm .st { font-size: 9px; }
+.chips-hand { display: flex; flex-wrap: wrap; gap: 2px; margin-top: 2px; }
+.chip-r { background: #f4f4f4; color: #222; border-radius: 3px; padding: 0 3px; font-size: 11px; font-weight: bold; }
+.chip-r sub { font-size: 9px; color: #666; font-weight: normal; }
+.centerbox { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,.35); border-radius: 12px; padding: 6px 12px; font-size: 12.5px; text-align: center; line-height: 1.6; max-width: 40%; z-index: 1; }
+.centerbox b { color: var(--accent); }
+.centerbox .trick { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-top: 4px; }
+.centerbox .trick .tc { font-size: 11px; color: var(--muted); }
+#me-zone { background: rgba(0,0,0,.25); border-radius: 12px; padding: 6px 8px; margin-top: 6px; border: 2px solid transparent; }
+#me-zone.turn { border-color: var(--accent); }
+#me-zone[hidden] { display: none; }
+#me-title { font-size: 13px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+#me-title .card.sm { width: 22px; height: 32px; }
+.hand-wrap { display: flex; flex-wrap: wrap; justify-content: center; padding: 14px 4px 2px 22px; row-gap: 6px; }
+.hand-wrap .card { margin-left: -18px; transition: transform .12s; }
+.hand-wrap.dense .card { margin-left: -22px; }
+.hand-wrap.clickable .card { cursor: pointer; }
+.hand-wrap.clickable .card:hover { transform: translateY(-5px); }
+.hand-wrap .card.sel { transform: translateY(-12px); border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.hand-wrap .card.dim { opacity: .4; }
+.card.wild { box-shadow: 0 0 0 2px #c77dff inset; }
+.card.wild .rk::after { content: "配"; font-size: 9px; color: #9b3dd6; margin-left: 1px; }
+#me-actions { display: flex; justify-content: center; gap: 8px; margin-top: 6px; flex-wrap: wrap; align-items: center; }
+#right-tabs { display: flex; gap: 4px; margin-bottom: 6px; }
+.rtab { padding: 6px 16px; border-radius: 8px; background: #10201a; color: var(--muted); font-size: 14px; }
+.rtab.active { background: var(--accent); color: #3a2a00; font-weight: bold; }
+.pane { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.pane[hidden] { display: none; }
+#rules-pane { overflow-y: auto; }
+.banner { padding: 6px 10px; border-radius: 8px; margin: 6px 0; font-size: 13px; line-height: 1.6; }
+.banner.green { background: #173d28; border: 1px solid #2f9e5a; }
+.banner.gray { background: #22362b; border: 1px solid var(--line); }
+.sp-head { font-size: 13px; line-height: 1.7; margin: 6px 0; }
+.sp-head b { color: var(--accent); }
+.sp-note { font-size: 12px; color: var(--muted); line-height: 1.7; margin-top: 8px; }
+.mvwrap { max-height: 300px; overflow-y: auto; border: 1px solid var(--line); border-radius: 8px; }
+table.mv { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+table.mv th, table.mv td { padding: 3px 6px; border-bottom: 1px solid #22362b; text-align: left; }
+table.mv th { color: var(--muted); font-weight: normal; position: sticky; top: 0; background: var(--panel); }
+table.mv tr.win td { color: #ffd76a; font-weight: bold; }
+table.mv tr.real td { background: rgba(77,171,247,.14); }
+table.mv td.res { color: #7fe39b; }
+#counter { display: grid; grid-template-columns: repeat(8, 1fr); gap: 3px; }
+#log .you { color: #8fe3ff; }
+.rules-text { font-size: 13px; line-height: 1.8; }
+.rules-text b { color: var(--accent); }
+@media (max-height: 800px) {
+  #felt { height: 320px; }
+  body.n6 #felt, body.n5 #felt { height: 360px; }
+}
