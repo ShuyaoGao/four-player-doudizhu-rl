@@ -336,9 +336,40 @@
     if (A.ruleSel !== null) { var hit = ds.filter(function (d) { return d.id === A.ruleSel; })[0]; if (hit) return hit; }
     return ds[ds.length - 1] || null;
   }
+  var GREEDY_STEPS = [
+    {id: 'lead', text: '① 没人要压（自由出牌）→ 在非炸弹牌型里挑「张数最多」的一手，张数相同挑「点数最小」'},
+    {id: 'follow', text: '② 要跟牌 → 在能压住的普通牌型里挑「点数最小」，点数相同挑「张数最少」'},
+    {id: 'bomb', text: '③ 普通牌压不住，而且手牌只剩 ≤ 8 张 → 用「最小的炸弹」抢回出牌权'},
+    {id: 'pass', text: '④ 否则 → 过（炸弹留着）'}
+  ];
+  var ALGO_ZH = {random: '随机', greedy: '贪心规则', dmc: 'DMC 神经网络', human: '人'};
+  /** 右栏顶部：这一桌每个座位用的是什么算法；当前这一步的算法怎么走（贪心 = 逐条规则；网络 = 看大脑面板）。 */
+  function algoCard(d) {
+    var counts = {}, order = [];
+    (A.kinds || []).forEach(function (k, s) { var kk = s === A.human ? 'human' : k; if (!(kk in counts)) { counts[kk] = 0; order.push(kk); } counts[kk]++; });
+    var summary = order.map(function (k) { return ALGO_ZH[k] + ' × ' + counts[k]; }).join('、');
+    var html = '<div class="algo"><div class="algo-h">这一桌的 AI：' + esc(summary) + '</div>' +
+      '<div class="algo-sub">' + (UI.hasBrain ? 'DMC = 训练过的神经网络（看「大脑面板」）；贪心 = 几条写死的规则；随机 = 均匀抽一个合法动作。'
+        : '这个游戏<b>没有训练好的神经网络</b>：AI 全是规则（贪心）或随机。贪心规则就是下面这几条，按顺序试，命中哪条就按哪条出。') + '</div>';
+    var kind = d ? d.kind : null, rule = d && d.rule ? d.rule : null;
+    if (kind === 'greedy' || kind === 'human' || !d) {
+      var steps = UI.greedySteps || GREEDY_STEPS, hit = rule && (kind === 'greedy' ? rule.rule : rule.greedy ? rule.greedy.rule : rule.rule);
+      html += '<ol class="algo-steps">' + steps.map(function (st) {
+        return '<li class="' + (hit === st.id ? 'hit' : '') + '">' + esc(st.text) + (hit === st.id ? ' <span class="tag best">这一步命中</span>' : '') + '</li>';
+      }).join('') + '</ol>';
+      if (kind === 'human') html += '<div class="algo-sub">这一步是你出的；下面显示如果按贪心规则会怎么挑，方便对照。</div>';
+    } else if (kind === 'random') {
+      html += '<div class="algo-sub">这一步由<b>随机</b>算法出：在全部合法动作里均匀抽一个（用和 Python random.Random 相同的随机数序列，所以可复现）。下面另列出贪心规则会怎么挑，做对照。</div>';
+    } else if (kind === 'dmc') {
+      html += '<div class="algo-sub">这一步由 <b>DMC 神经网络</b>出：把局面编码成输入向量 → 三层隐藏层 → 给每个合法动作各算一个 Q 值 → 选最高的。真实激活在' +
+        ($('brain-pane') ? '「<a href="#" class="go-brain">大脑面板</a>」' : '大脑面板') + '里；下面另列出贪心规则会怎么挑，做对照。</div>';
+    }
+    return html + '</div>';
+  }
   function renderRules() {
     var el = $('rules-pane'), d = currentRuleDecision(), g = A.game, html = '';
     var ds = A.decisions, k = d ? ds.indexOf(d) : -1;
+    html += algoCard(d);
     html += '<div class="row" style="justify-content:space-between"><b class="panel-h" style="margin:0">这一步依据的规则</b><span>' +
       '<button class="icon-btn" id="rule-prev"' + (k > 0 ? '' : ' disabled') + '>◀</button> <span class="small">' + (d ? '第 ' + (k + 1) + ' / ' + ds.length + ' 个决策' : '还没有决策') + '</span> ' +
       '<button class="icon-btn" id="rule-next"' + (d && k < ds.length - 1 ? '' : ' disabled') + '>▶</button></span></div>';
@@ -353,20 +384,27 @@
         if (d.kind === 'greedy' || d.kind === 'human') {
           html += '<div class="banner green"><b>' + (d.kind === 'human' ? '如果按贪心规则：' : '命中的规则：') + '</b>' + esc(info.text) + '</div>';
         } else html += '<div class="banner gray">' + esc(info.text) + (info.greedy ? '<br>换成贪心规则：' + esc(info.greedy.text) + ' → <b>' + esc(info.greedy.move.isPass ? '过' : moveText(info.greedy.move)) + '</b>' : '') + '</div>';
-        var pool = (d.kind === 'greedy' || d.kind === 'human' ? info.pool : (info.greedy && info.greedy.pool)) || [];
-        var best = d.kind === 'greedy' || d.kind === 'human' ? info.move : info.greedy && info.greedy.move;
-        var shown = d.legal.slice(0, 60);
-        html += '<div class="mvwrap"><table class="mv"><tr><th>合法动作</th><th>牌型</th><th>规则会考虑</th></tr>' + shown.map(function (m) {
-          var inPool = pool.some(function (p) { return CG.moveEq(p, m); }), isBest = best && CG.moveEq(best, m), isReal = chosen && CG.moveEq(chosen, m);
-          return '<tr class="' + (isBest ? 'win' : '') + (isReal ? ' real' : '') + '"><td>' + esc(m.isPass ? '过' : moveText(m)) + (isReal ? ' <span class="tag real">实际出的</span>' : '') +
-            (isBest ? ' <span class="tag best">规则挑的</span>' : '') + '</td><td>' + esc(KIND_ZH[m.kind] || m.kind) + '</td><td class="res">' + (inPool ? '✔' : '') + '</td></tr>';
-        }).join('') + (d.legal.length > 60 ? '<tr><td colspan="3" class="muted">…… 还有 ' + (d.legal.length - 60) + ' 个</td></tr>' : '') + '</table></div>';
+        var gi = d.kind === 'greedy' || d.kind === 'human' ? info : (info.greedy || {});
+        var pool = gi.pool || [], best = gi.move, keyOf = gi.keyOf || null, keyText = gi.keyText || null;
+        // 候选表：先列规则“考虑范围”里的动作，按规则的排序依据排好名次；再列不在范围里的（灰）
+        var inPool = d.legal.filter(function (m) { return pool.some(function (p) { return CG.moveEq(p, m); }); });
+        var outPool = d.legal.filter(function (m) { return !pool.some(function (p) { return CG.moveEq(p, m); }); });
+        if (keyOf) inPool = inPool.slice().sort(function (a, b) { return CG.cmpTuple(keyOf(a), keyOf(b)); });
+        var rows = inPool.map(function (m, i) { return {m: m, rank: i + 1}; }).concat(outPool.map(function (m) { return {m: m, rank: 0}; })).slice(0, 60);
+        if (gi.keyName) html += '<div class="algo-sub">排序依据：' + esc(gi.keyName) + '，排第 1 的就是规则挑的。</div>';
+        html += '<div class="mvwrap"><table class="mv"><tr><th>名次</th><th>合法动作</th><th>牌型</th><th>' + (keyText ? '排序依据' : '规则会考虑') + '</th></tr>' + rows.map(function (r) {
+          var m = r.m, isBest = best && CG.moveEq(best, m), isReal = chosen && CG.moveEq(chosen, m);
+          return '<tr class="' + (isBest ? 'win' : '') + (isReal ? ' real' : '') + (r.rank ? '' : ' dim') + '"><td>' + (r.rank ? '第 ' + r.rank : '—') + '</td><td>' + esc(m.isPass ? '过' : moveText(m)) + (isReal ? ' <span class="tag real">实际出的</span>' : '') +
+            (isBest ? ' <span class="tag best">规则挑的</span>' : '') + '</td><td>' + esc(KIND_ZH[m.kind] || m.kind) + '</td><td class="res">' + (r.rank ? (keyText ? esc(keyText(m)) : '✔') : '不在考虑范围') + '</td></tr>';
+        }).join('') + (d.legal.length > 60 ? '<tr><td colspan="4" class="muted">…… 还有 ' + (d.legal.length - 60) + ' 个</td></tr>' : '') + '</table></div>';
       }
     }
     html += '<div class="panel-h" style="margin-top:10px">' + (A.human === null ? '记牌器（还没出的牌，' + {4: '四', 5: '五', 6: '六'}[N] + '家合计）' : '记牌器（除你手牌和已出的牌）') + '</div><div id="counter">' + counterHTML() + '</div>';
     html += '<div class="sp-note">' + UI.rulesNote + '</div>';
     el.innerHTML = html;
     var p = $('rule-prev'), n = $('rule-next');
+    var gb = el.querySelector('.go-brain');
+    if (gb) gb.onclick = function (ev) { ev.preventDefault(); A.pane = 'brain'; renderRight(); };
     if (p) p.onclick = function () { var dd = A.decisions[k - 1]; if (dd) { A.ruleSel = dd.id; renderRules(); } };
     if (n) n.onclick = function () { var dd = A.decisions[k + 1]; if (dd) { A.ruleSel = k + 1 === A.decisions.length - 1 ? null : dd.id; renderRules(); } };
   }

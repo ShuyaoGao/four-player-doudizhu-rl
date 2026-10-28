@@ -297,12 +297,18 @@
     if (leading) {
       var pool = normal.length ? normal : nonPass;
       return {move: minBy(pool, function (m) { return [-moveSize(m), m.main]; }), rule: 'lead',
-        text: '自由出牌：在' + (normal.length ? '非炸弹' : '全部') + '牌型里挑张数最多的一手，张数相同挑最小的。', pool: pool, legal: legal};
+        text: '自由出牌：在' + (normal.length ? '非炸弹' : '全部') + '牌型里挑张数最多的一手，张数相同挑最小的。', pool: pool, legal: legal,
+        keyOf: function (m) { return [-moveSize(m), m.main]; }, keyText: function (m) { return '张数 ' + moveSize(m) + ' · 点数 ' + RANK_NAMES[m.main]; },
+        keyName: '先比张数（多的优先），再比点数（小的优先）'};
     }
     if (normal.length) return {move: minBy(normal, function (m) { return [m.main, moveSize(m)]; }), rule: 'follow',
-      text: '跟牌：在能压住的普通牌型里挑最小的一手（不轻易动炸弹）。', pool: normal, legal: legal};
+      text: '跟牌：在能压住的普通牌型里挑最小的一手（不轻易动炸弹）。', pool: normal, legal: legal,
+      keyOf: function (m) { return [m.main, moveSize(m)]; }, keyText: function (m) { return '点数 ' + RANK_NAMES[m.main] + ' · 张数 ' + moveSize(m); },
+      keyName: '先比点数（小的优先），再比张数（少的优先）'};
     if (nonPass.length && game.hands[game.turn].length <= 8) return {move: minBy(nonPass, function (m) { return [moveSize(m), m.main]; }), rule: 'bomb',
-      text: '普通牌压不住，但手里只剩 ' + game.hands[game.turn].length + ' 张（≤8 张）：用最小的炸弹抢出牌权。', pool: nonPass, legal: legal};
+      text: '普通牌压不住，但手里只剩 ' + game.hands[game.turn].length + ' 张（≤8 张）：用最小的炸弹抢出牌权。', pool: nonPass, legal: legal,
+      keyOf: function (m) { return [moveSize(m), m.main]; }, keyText: function (m) { return '张数 ' + moveSize(m) + ' · 点数 ' + RANK_NAMES[m.main]; },
+      keyName: '先比张数（少的优先），再比点数（小的优先）'};
     return {move: legal[0], rule: 'pass', text: nonPass.length ? '只有炸弹能压，手牌还多（>8 张）：留着炸弹，过。' : '没有能压住的牌：过。', pool: [], legal: legal};
   };
   GreedyAgent.prototype.act = function (game) { return this.explain(game).move; };

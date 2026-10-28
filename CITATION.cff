@@ -7,8 +7,8 @@ authors:
     given-names: Shuyao
     email: "gaoshuyao.mk@gmail.com"
     affiliation: "aSSIST University (Seoul School of Integrated Sciences and Technologies)"
-version: "1.0"
-date-released: "2026-10-14"
+version: "1.1"
+date-released: "2026-10-28"
 license: MIT
 repository-code: "https://github.com/ShuyaoGao/four-player-doudizhu-rl"
 url: "https://shuyaogao.github.io/four-player-doudizhu-rl/"

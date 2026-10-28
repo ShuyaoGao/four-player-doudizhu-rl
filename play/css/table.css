@@ -61,3 +61,13 @@ table.mv td.res { color: #7fe39b; }
   #felt { height: 320px; }
   body.n6 #felt, body.n5 #felt { height: 360px; }
 }
+
+/* 右栏顶部：算法说明卡 */
+.algo { background: #142a1e; border: 1px solid #2f9e5a; border-radius: 10px; padding: 8px 10px; margin: 2px 0 8px; }
+.algo-h { font-weight: bold; font-size: 13.5px; color: #ffd76a; }
+.algo-sub { font-size: 12.5px; line-height: 1.6; color: #c8d6cc; margin-top: 4px; }
+.algo-sub a { color: #7fd0ff; }
+.algo-steps { margin: 6px 0 0 0; padding-left: 0; list-style: none; }
+.algo-steps li { font-size: 12.5px; line-height: 1.55; padding: 3px 8px; border-radius: 6px; border: 1px solid transparent; color: #aab8ae; }
+.algo-steps li.hit { background: #173d28; border-color: #2f9e5a; color: #eaf3ec; font-weight: bold; }
+table.mv tr.dim td { color: #6f7f74; }

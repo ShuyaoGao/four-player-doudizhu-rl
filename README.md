@@ -17,7 +17,7 @@
 ## 怎么打开（都不需要安装）
 
 - **手机**：点在线链接 <https://shuyaogao.github.io/four-player-doudizhu-rl/>（竖屏打开，往下滑看大脑面板；点「我来玩」自己打）。
-- **电脑**：点同一个在线链接；或者在 [Releases](https://github.com/ShuyaoGao/four-player-doudizhu-rl/releases) 下载 `four-player-doudizhu-rl-v1.0.zip`，解压后双击 `index.html`；或者点 **Code → Download ZIP**，解压后双击 `play/index.html`。
+- **电脑**：点同一个在线链接；或者在 [Releases](https://github.com/ShuyaoGao/four-player-doudizhu-rl/releases) 下载 `four-player-doudizhu-rl-v1.1.zip`，解压后双击 `index.html`；或者点 **Code → Download ZIP**，解压后双击 `play/index.html`。
 
 页面是纯静态网页：不需要 Python，不需要联网，不会在后台留下任何进程。Windows 上的 Edge 和手机尺寸（触屏模拟）都测过；Safari 需要在真实 Mac 上确认（见常见问题）。
 
